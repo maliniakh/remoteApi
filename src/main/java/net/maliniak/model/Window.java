@@ -8,7 +8,7 @@ import com.sun.jna.platform.win32.WinDef;
  * Created by llmali on 27/11/2015.
  */
 public class Window {
-    private String id;
+    private WinDef.HWND hwnd;
     private int x;
     private int y;
     private int width;
@@ -16,6 +16,8 @@ public class Window {
     private String title;
 
     public Window(WinDef.HWND hwnd) {
+        this.hwnd = hwnd;
+
         char[] chars = new char[256];
         User32.INSTANCE.GetWindowText(hwnd, chars, 256);
         String title = Native.toString(chars);
@@ -29,8 +31,12 @@ public class Window {
         this.width = rect.right - rect.left;
     }
 
-    public String getId() {
-        return id;
+    public String getTitle() {
+        return title;
+    }
+
+    public WinDef.HWND getHwnd() {
+        return hwnd;
     }
 
     public int getX() {
@@ -47,5 +53,17 @@ public class Window {
 
     public int getHeight() {
         return height;
+    }
+
+    @Override
+    public String toString() {
+        return "Window{" +
+                "hwnd=" + hwnd +
+                ", x=" + x +
+                ", y=" + y +
+                ", width=" + width +
+                ", height=" + height +
+                ", title='" + title + '\'' +
+                '}';
     }
 }

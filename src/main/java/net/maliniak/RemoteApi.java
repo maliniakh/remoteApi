@@ -2,8 +2,6 @@ package net.maliniak;
 
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
@@ -22,7 +20,11 @@ public class RemoteApi {
 
     public Window getUniqueWindow(Site site) {
         final String regex = getTitleRegex(site);
-        final Pattern pattern = Pattern.compile(regex);
+        return getUniqueWindow(regex);
+    }
+
+    public Window getUniqueWindow(String titleRegex) {
+        final Pattern pattern = Pattern.compile(titleRegex);
 
         final List<WinDef.HWND> candidateWindows = new ArrayList<WinDef.HWND>();
 
@@ -31,7 +33,7 @@ public class RemoteApi {
                 String title = WindowUtils.getWindowTitle(hwnd);
 
                 Matcher matcher = pattern.matcher(title);
-                if(matcher.matches()) {
+                if (matcher.matches()) {
                     candidateWindows.add(hwnd);
                     System.out.println(title);
                 }
@@ -44,17 +46,20 @@ public class RemoteApi {
         return new Window(hwnd);
     }
 
-    public List<Window> getChildWindows(String id, String regex) {
-        WinDef.HWND hwnd = null;
-        // todo: id -> hwnd
-
+    public List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) {
         List<Window> result = new ArrayList<Window>();
-        final Pattern pattern = Pattern.compile(regex);
+        final Pattern pattern = titleRegex != null ? Pattern.compile(titleRegex):null;
         instance.EnumChildWindows(hwnd,  (childHwnd, pointer) -> {
-            String title = WindowUtils.getWindowTitle(childHwnd);
-            if(pattern.matcher(title).matches()) {
+            if(pattern != null) {
+                String title = WindowUtils.getWindowTitle(childHwnd);
+                if (pattern.matcher(title).matches()) {
+                    result.add(new Window(childHwnd));
+                }
+            } else {
                 result.add(new Window(childHwnd));
             }
+
+            return true;
         }, null);
 
         return result;
@@ -75,18 +80,15 @@ public class RemoteApi {
 
 
     public static void main(String[] args) {
-        instance.EnumWindows(new WinUser.WNDENUMPROC() {
-            public boolean callback(WinDef.HWND hwnd, Pointer pointer) {
-                System.out.println(hwnd);
+        RemoteApi remoteApi = new RemoteApi();
+        Window lobby = remoteApi.getUniqueWindow("Lobby");
+        System.out.println(lobby);
 
-                return true;
-            }
-        }, null);
 
-//        instance.EnumChildWindows()
-
-        System.out.println("CHUJ");
-//        User32.INSTANCE.
-//        System.out.println(hwnd);
+        List<Window> childWindows = remoteApi.getChildWindows(lobby.getHwnd(), null);
+        System.out.println("child windows:");
+        for (Window w : childWindows) {
+            System.out.println(w);
+        }
     }
 }
