@@ -2,11 +2,13 @@ package net.maliniak;
 
 
 import com.google.common.collect.Iterables;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinUser;
+import com.sun.jna.ptr.IntByReference;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
 
@@ -90,5 +92,20 @@ public class RemoteApi {
         for (Window w : childWindows) {
             System.out.println(w);
         }
+
+        IntByReference intByRef = new IntByReference();
+        int i = instance.GetWindowThreadProcessId(lobby.getHwnd(), intByRef);
+
+        System.out.println(intByRef);
+        intByRef.getValue();
+
+        Window table = remoteApi.getUniqueWindow("Linz.*");
+        IntByReference tableIntByRef = new IntByReference();
+        instance.GetWindowThreadProcessId(table.getHwnd(), tableIntByRef);
+        System.out.println(tableIntByRef.getValue());
+
+//
+        Native.
     }
+
 }
