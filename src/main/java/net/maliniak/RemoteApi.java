@@ -2,7 +2,6 @@ package net.maliniak;
 
 
 import com.google.common.collect.Iterables;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
@@ -48,9 +47,34 @@ public class RemoteApi {
         return new Window(hwnd);
     }
 
+    public List<Window> getWindows(Integer processId, String titleRegex) {
+        final List<Window> result = new ArrayList<>();
+
+        final Pattern pattern = titleRegex != null ? Pattern.compile(titleRegex) : null;
+        instance.EnumWindows((hwnd, pointer) -> {
+            IntByReference intByRef = new IntByReference();
+            instance.GetWindowThreadProcessId(hwnd, intByRef);
+
+            if (intByRef.getValue() == processId) {
+                if(pattern != null) {
+                    String title = WindowUtils.getWindowTitle(hwnd);
+                    if (pattern.matcher(title).matches()) {
+                        result.add(new Window(hwnd));
+                    }
+                } else {
+                    result.add(new Window(hwnd));
+                }
+            }
+
+            return true;
+        }, null);
+
+        return result;
+    }
+
     public List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) {
         List<Window> result = new ArrayList<Window>();
-        final Pattern pattern = titleRegex != null ? Pattern.compile(titleRegex):null;
+        final Pattern pattern = titleRegex != null ? Pattern.compile(titleRegex) : null;
         instance.EnumChildWindows(hwnd,  (childHwnd, pointer) -> {
             if(pattern != null) {
                 String title = WindowUtils.getWindowTitle(childHwnd);
@@ -99,13 +123,19 @@ public class RemoteApi {
         System.out.println(intByRef);
         intByRef.getValue();
 
-        Window table = remoteApi.getUniqueWindow("Linz.*");
-        IntByReference tableIntByRef = new IntByReference();
-        instance.GetWindowThreadProcessId(table.getHwnd(), tableIntByRef);
-        System.out.println(tableIntByRef.getValue());
+        System.out.println("windows by process id");
+        List<Window> windows = remoteApi.getWindows(lobby.getProcessId(), ".*NLH.*");
+        for (Window w : windows) {
+            System.out.println(w);
+        }
+
+//        Window table = remoteApi.getUniqueWindow("Linz.*");
+//        IntByReference tableIntByRef = new IntByReference();
+//        instance.GetWindowThreadProcessId(table.getHwnd(), tableIntByRef);
+//        System.out.println(tableIntByRef.getValue());
 
 //
-        Native.
+//        Native.
     }
 
 }

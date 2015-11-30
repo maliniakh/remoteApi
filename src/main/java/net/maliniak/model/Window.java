@@ -3,6 +3,7 @@ package net.maliniak.model;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.ptr.IntByReference;
 
 /**
  * Created by llmali on 27/11/2015.
@@ -14,6 +15,7 @@ public class Window {
     private int width;
     private int height;
     private String title;
+    private Integer processId;
 
     public Window(WinDef.HWND hwnd) {
         this.hwnd = hwnd;
@@ -27,8 +29,12 @@ public class Window {
         User32.INSTANCE.GetWindowRect(hwnd, rect);
         this.x = rect.left;
         this.y = rect.top;
-        this.height = rect.top - rect.bottom;
+        this.height = rect.bottom - rect.top;
         this.width = rect.right - rect.left;
+
+        IntByReference intByRef = new IntByReference();
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd, intByRef);
+        this.processId = intByRef.getValue();
     }
 
     public String getTitle() {
@@ -55,6 +61,10 @@ public class Window {
         return height;
     }
 
+    public Integer getProcessId() {
+        return processId;
+    }
+
     @Override
     public String toString() {
         return "Window{" +
@@ -64,6 +74,7 @@ public class Window {
                 ", width=" + width +
                 ", height=" + height +
                 ", title='" + title + '\'' +
+                ", processId=" + processId +
                 '}';
     }
 }
