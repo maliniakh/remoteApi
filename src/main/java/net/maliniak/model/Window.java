@@ -5,10 +5,13 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
 
+import java.io.Serializable;
+
 /**
  * Created by llmali on 27/11/2015.
  */
-public class Window {
+@SuppressWarnings("unused")
+public class Window implements Serializable {
     private WinDef.HWND hwnd;
     private int x;
     private int y;
