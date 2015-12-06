@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 @SuppressWarnings("unused")
 public class Window implements Serializable {
-    private WinDef.HWND hwnd;
+//    private WinDef.HWND hwnd;
     private int x;
     private int y;
     private int width;
@@ -21,7 +21,7 @@ public class Window implements Serializable {
     private Integer processId;
 
     public Window(WinDef.HWND hwnd) {
-        this.hwnd = hwnd;
+//        this.hwnd = hwnd;
 
         char[] chars = new char[256];
         User32.INSTANCE.GetWindowText(hwnd, chars, 256);
@@ -44,9 +44,9 @@ public class Window implements Serializable {
         return title;
     }
 
-    public WinDef.HWND getHwnd() {
-        return hwnd;
-    }
+//    public WinDef.HWND getHwnd() {
+//        return hwnd;
+//    }
 
     public int getX() {
         return x;
@@ -71,7 +71,7 @@ public class Window implements Serializable {
     @Override
     public String toString() {
         return "Window{" +
-                "hwnd=" + hwnd +
+//                "hwnd=" + hwnd +
                 ", x=" + x +
                 ", y=" + y +
                 ", width=" + width +
