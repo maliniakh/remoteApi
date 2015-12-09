@@ -7,10 +7,11 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
+import net.sf.lipermi.exception.LipeRMIException;
+import net.sf.lipermi.handler.CallHandler;
+import net.sf.lipermi.net.Server;
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -73,7 +74,7 @@ public class RemoteApiImpl implements RemoteApi {
         return result;
     }
 
-    @Override
+//    @Override
     public List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) {
         List<Window> result = new ArrayList<Window>();
         final Pattern pattern = titleRegex != null ? Pattern.compile(titleRegex) : null;
@@ -106,23 +107,29 @@ public class RemoteApiImpl implements RemoteApi {
         }
     }
 
-    private void startServer() {
-        try {
-            // create on port 1099
-            Registry registry = LocateRegistry.createRegistry(1099);
+    private void startServer() throws LipeRMIException, IOException {
+//        try {
+//            // create on port 1099
+//            Registry registry = LocateRegistry.createRegistry(1099);
+//
+//            // create a new service named myMessage
+//            registry.rebind("remoteApi", new RemoteApiImpl());
+//            System.out.println("system is ready");
+//
+//            System.in.read();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-            // create a new service named myMessage
-            registry.rebind("remoteApi", new RemoteApiImpl());
-            System.out.println("system is ready");
+        CallHandler ch = new CallHandler();
+        ch.registerGlobal(RemoteApi.class, new RemoteApiImpl());
 
-            System.in.read();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Server server = new Server();
+        server.bind(4455, ch);
     }
 
 
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws IOException, LipeRMIException {
         RemoteApiImpl remoteApi = new RemoteApiImpl();
         remoteApi.startServer();
 

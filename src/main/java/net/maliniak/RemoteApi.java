@@ -1,6 +1,5 @@
 package net.maliniak;
 
-import com.sun.jna.platform.win32.WinDef;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
 
@@ -19,5 +18,5 @@ public interface RemoteApi extends Remote, Serializable {
 
     List<Window> getWindows(Integer processId, String titleRegex) throws RemoteException;
 
-    List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) throws RemoteException;
+//    List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) throws RemoteException;
 }

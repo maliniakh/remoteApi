@@ -83,6 +83,12 @@
             <version>18.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.tascape.qa</groupId>
+            <artifactId>lipermi</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
 
     </dependencies>
 </project>
