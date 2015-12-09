@@ -7,9 +7,9 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
-import net.sf.lipermi.exception.LipeRMIException;
-import net.sf.lipermi.handler.CallHandler;
-import net.sf.lipermi.net.Server;
+import lipermi.exception.LipeRMIException;
+import lipermi.handler.CallHandler;
+import lipermi.net.Server;
 
 import java.io.IOException;
 import java.util.ArrayList;
