@@ -3,15 +3,13 @@ package net.maliniak;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
 
-import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
 /**
  * Created by llmali on 01/12/2015.
  */
-public interface RemoteApi extends Remote, Serializable {
+public interface RemoteApi {
     Window getUniqueWindow(Site site) throws RemoteException;
 
     Window getUniqueWindow(String titleRegex) throws RemoteException;
