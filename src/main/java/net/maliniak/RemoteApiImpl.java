@@ -5,13 +5,14 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
-import net.maliniak.model.Site;
-import net.maliniak.model.Window;
 import lipermi.exception.LipeRMIException;
 import lipermi.handler.CallHandler;
 import lipermi.net.Server;
+import net.maliniak.model.Site;
+import net.maliniak.model.Window;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -75,23 +76,8 @@ public class RemoteApiImpl implements RemoteApi {
     }
 
 //    @Override
-    public List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) {
-        List<Window> result = new ArrayList<Window>();
-        final Pattern pattern = titleRegex != null ? Pattern.compile(titleRegex) : null;
-        instance.EnumChildWindows(hwnd, (childHwnd, pointer) -> {
-            if (pattern != null) {
-                String title = WindowUtils.getWindowTitle(childHwnd);
-                if (pattern.matcher(title).matches()) {
-                    result.add(new Window(childHwnd));
-                }
-            } else {
-                result.add(new Window(childHwnd));
-            }
-
-            return true;
-        }, null);
-
-        return result;
+    public List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) throws RemoteException {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -125,7 +111,7 @@ public class RemoteApiImpl implements RemoteApi {
         ch.registerGlobal(RemoteApi.class, new RemoteApiImpl());
 
         Server server = new Server();
-        server.bind(4455, ch);
+        server.bind(4457, ch);
     }
 
 
