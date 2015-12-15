@@ -5,9 +5,9 @@ import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
-import lipermi.exception.LipeRMIException;
-import lipermi.handler.CallHandler;
-import lipermi.net.Server;
+import net.sf.lipermi.exception.LipeRMIException;
+import net.sf.lipermi.handler.CallHandler;
+import net.sf.lipermi.net.Server;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
 
@@ -29,6 +29,8 @@ public class RemoteApiImpl implements RemoteApi {
 
     @Override
     public Window getUniqueWindow(String titleRegex) {
+        System.out.println("chuj");
+
         final Pattern pattern = Pattern.compile(titleRegex);
 
         final List<WinDef.HWND> candidateWindows = new ArrayList<>();
@@ -112,6 +114,8 @@ public class RemoteApiImpl implements RemoteApi {
 
         Server server = new Server();
         server.bind(4457, ch);
+
+        System.out.println("server started");
     }
 
 
