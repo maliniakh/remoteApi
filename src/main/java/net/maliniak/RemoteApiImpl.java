@@ -11,6 +11,7 @@ import net.maliniak.model.Window;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -112,7 +113,9 @@ public class RemoteApiImpl implements RemoteApi {
             Registry registry = LocateRegistry.createRegistry(1099);
 
             // create a new service named myMessage
-            registry.rebind("remoteApi", new RemoteApiImpl());
+            RemoteApiImpl remoteApiImpl = new RemoteApiImpl();
+            registry.rebind("remoteApi", remoteApiImpl);
+            UnicastRemoteObject.exportObject(remoteApiImpl, 0);
             System.out.println("system is ready");
 
             System.in.read();
