@@ -48,7 +48,7 @@ public class RemoteApiImpl implements RemoteApi {
         }, null);
 
         WinDef.HWND hwnd = Iterables.getOnlyElement(candidateWindows);
-        return new Window(hwnd);
+        return new Window(/*hwnd*/);
     }
 
     @Override
@@ -64,10 +64,10 @@ public class RemoteApiImpl implements RemoteApi {
                 if(pattern != null) {
                     String title = WindowUtils.getWindowTitle(hwnd);
                     if (pattern.matcher(title).matches()) {
-                        result.add(new Window(hwnd));
+                        result.add(new Window(/*hwnd*/));
                     }
                 } else {
-                    result.add(new Window(hwnd));
+                    result.add(new Window(/*hwnd*/));
                 }
             }
 
