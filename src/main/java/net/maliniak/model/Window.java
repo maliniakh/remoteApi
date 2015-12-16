@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 @SuppressWarnings("unused")
 public class Window implements Serializable {
-//    private WinDef.HWND hwnd;
+    private Long hwndPeer;
     private int x;
     private int y;
     private int width;
@@ -35,11 +35,25 @@ public class Window implements Serializable {
 //        this.processId = intByRef.getValue();
 //    }
 
+    public Window(Long hwndPeer, int x, int y, int width, int height, String title, Integer processId) {
+        this.hwndPeer = hwndPeer;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.title = title;
+        this.processId = processId;
+    }
+
     public String getTitle() {
         return title;
     }
 
-//    public WinDef.HWND getHwnd() {
+    public Long getHwndPeer() {
+        return hwndPeer;
+    }
+
+    //    public WinDef.HWND getHwnd() {
 //        return hwnd;
 //    }
 

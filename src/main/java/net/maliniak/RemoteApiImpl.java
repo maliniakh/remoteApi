@@ -1,8 +1,10 @@
 package net.maliniak;
 
 import com.google.common.collect.Iterables;
+import com.sun.jna.Pointer;
 import com.sun.jna.platform.WindowUtils;
 import com.sun.jna.platform.win32.User32;
+import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
 import net.sf.lipermi.exception.LipeRMIException;
@@ -47,8 +49,9 @@ public class RemoteApiImpl implements RemoteApi {
             return true;
         }, null);
 
+        new WinDef.HWND(new Pointer(222L));
         WinDef.HWND hwnd = Iterables.getOnlyElement(candidateWindows);
-        return new Window(/*hwnd*/);
+        return createWindow(hwnd);
     }
 
     @Override
@@ -64,10 +67,10 @@ public class RemoteApiImpl implements RemoteApi {
                 if(pattern != null) {
                     String title = WindowUtils.getWindowTitle(hwnd);
                     if (pattern.matcher(title).matches()) {
-                        result.add(new Window(/*hwnd*/));
+                        result.add(createWindow(hwnd));
                     }
                 } else {
-                    result.add(new Window(/*hwnd*/));
+                    result.add(createWindow(hwnd));
                 }
             }
 
@@ -80,6 +83,23 @@ public class RemoteApiImpl implements RemoteApi {
 //    @Override
     public List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) throws RemoteException {
         throw new UnsupportedOperationException();
+    }
+
+    private static Window createWindow(WinDef.HWND hwnd) {
+        char[] chars = new char[256];
+        User32.INSTANCE.GetWindowText(hwnd, chars, 256);
+        String title = Native.toString(chars);
+
+        WinDef.RECT rect = new WinDef.RECT();
+        User32.INSTANCE.GetWindowRect(hwnd, rect);
+        int width = rect.right - rect.left;
+        int height = rect.bottom - rect.top;
+
+        IntByReference intByRef = new IntByReference();
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd, intByRef);
+        int processId = intByRef.getValue();
+
+        return new Window(hwnd.getPointer().getLong(0), rect.left, rect.top, width, height, title, processId);
     }
 
     /**
