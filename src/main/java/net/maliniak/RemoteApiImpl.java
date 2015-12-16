@@ -114,8 +114,8 @@ public class RemoteApiImpl implements RemoteApi {
 
             // create a new service named myMessage
             RemoteApiImpl remoteApiImpl = new RemoteApiImpl();
-            registry.rebind("remoteApi", remoteApiImpl);
             UnicastRemoteObject.exportObject(remoteApiImpl, 0);
+            registry.rebind("remoteApi", remoteApiImpl);
             System.out.println("system is ready");
 
             System.in.read();
