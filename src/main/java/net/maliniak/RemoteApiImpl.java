@@ -152,6 +152,11 @@ public class RemoteApiImpl implements RemoteApi {
 
     }
 
+    @Override
+    public void mouseMove(int x, int y) {
+        throw new UnsupportedOperationException();
+    }
+
     private static Window createWindow(WinDef.HWND hwnd) {
         char[] chars = new char[256];
         User32.INSTANCE.GetWindowText(hwnd, chars, 256);
@@ -183,19 +188,6 @@ public class RemoteApiImpl implements RemoteApi {
     }
 
     private void startServer() throws LipeRMIException, IOException {
-//        try {
-//            // create on port 1099
-//            Registry registry = LocateRegistry.createRegistry(1099);
-//
-//            // create a new service named myMessage
-//            registry.rebind("remoteApi", new RemoteApiImpl());
-//            System.out.println("system is ready");
-//
-//            System.in.read();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         CallHandler ch = new CallHandler();
         ch.registerGlobal(RemoteApi.class, new RemoteApiImpl());
 

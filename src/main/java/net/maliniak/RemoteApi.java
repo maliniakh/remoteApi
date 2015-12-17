@@ -19,5 +19,7 @@ public interface RemoteApi {
 
     BufferedImage capture(User32.HWND hWnd);
 
+    void mouseMove(int x, int y);
+
 //    List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) throws RemoteException;
 }
