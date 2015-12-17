@@ -16,6 +16,7 @@ import net.sf.lipermi.exception.LipeRMIException;
 import net.sf.lipermi.handler.CallHandler;
 import net.sf.lipermi.net.Server;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -28,6 +29,8 @@ import com.sun.jna.platform.win32.WinGDI.BITMAPINFO;
 import com.sun.jna.platform.win32.WinGDI;
 import com.sun.jna.Memory;
 
+import javax.swing.*;
+
 public class RemoteApiImpl implements RemoteApi {
     final static User32 instance = User32.INSTANCE;
 
@@ -39,8 +42,6 @@ public class RemoteApiImpl implements RemoteApi {
 
     @Override
     public Window getUniqueWindow(String titleRegex) {
-        System.out.println("chuj");
-
         final Pattern pattern = Pattern.compile(titleRegex);
 
         final List<WinDef.HWND> candidateWindows = new ArrayList<>();
@@ -57,8 +58,21 @@ public class RemoteApiImpl implements RemoteApi {
             return true;
         }, null);
 
-        new WinDef.HWND(new Pointer(222L));
         WinDef.HWND hwnd = Iterables.getOnlyElement(candidateWindows);
+
+
+
+            long start = System.currentTimeMillis();
+            BufferedImage capture = capture(hwnd);
+            System.out.println(System.currentTimeMillis() - start);
+//        System.out.println("capture: " + capture);
+
+        JFrame frame = new JFrame();
+        frame.getContentPane().setLayout(new FlowLayout());
+        frame.getContentPane().add(new JLabel(new ImageIcon(capture)));
+        frame.pack();
+        frame.setVisible(true);
+
         return createWindow(hwnd);
     }
 
@@ -93,6 +107,12 @@ public class RemoteApiImpl implements RemoteApi {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Seems like first call is slow (~200ms), but subsequent ones are way faster
+     * @param hWnd
+     * @return
+     */
+    @Override
     public BufferedImage capture(User32.HWND hWnd) {
 
         User32.HDC hdcWindow = User32.INSTANCE.GetDC(hWnd);
