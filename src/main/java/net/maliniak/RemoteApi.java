@@ -17,7 +17,7 @@ public interface RemoteApi {
 
     List<Window> getWindows(Integer processId, String titleRegex);
 
-    BufferedImage capture(User32.HWND hWnd);
+    BufferedImage capture(Long hwndPeer);
 
     void mouseMove(int x, int y);
 

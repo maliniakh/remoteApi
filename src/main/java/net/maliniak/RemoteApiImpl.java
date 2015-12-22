@@ -62,16 +62,16 @@ public class RemoteApiImpl implements RemoteApi {
 
 
 
-            long start = System.currentTimeMillis();
-            BufferedImage capture = capture(hwnd);
-            System.out.println(System.currentTimeMillis() - start);
+//            long start = System.currentTimeMillis();
+//            BufferedImage capture = capture(hwnd);
+//            System.out.println(System.currentTimeMillis() - start);
 //        System.out.println("capture: " + capture);
 
-        JFrame frame = new JFrame();
-        frame.getContentPane().setLayout(new FlowLayout());
-        frame.getContentPane().add(new JLabel(new ImageIcon(capture)));
-        frame.pack();
-        frame.setVisible(true);
+//        JFrame frame = new JFrame();
+//        frame.getContentPane().setLayout(new FlowLayout());
+//        frame.getContentPane().add(new JLabel(new ImageIcon(capture)));
+//        frame.pack();
+//        frame.setVisible(true);
 
         return createWindow(hwnd);
     }
@@ -109,17 +109,18 @@ public class RemoteApiImpl implements RemoteApi {
 
     /**
      * Seems like first call is slow (~200ms), but subsequent ones are way faster
-     * @param hWnd
+     * @param hwndPeer
      * @return
      */
     @Override
-    public BufferedImage capture(User32.HWND hWnd) {
+    public BufferedImage capture(Long hwndPeer) {
+        WinDef.HWND hwnd = new WinDef.HWND(new Pointer(hwndPeer));
 
-        User32.HDC hdcWindow = User32.INSTANCE.GetDC(hWnd);
+        User32.HDC hdcWindow = User32.INSTANCE.GetDC(hwnd);
         User32.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
 
         User32.RECT bounds = new User32.RECT();
-        User32Extra.INSTANCE.GetClientRect(hWnd, bounds);
+        User32Extra.INSTANCE.GetClientRect(hwnd, bounds);
 
         int width = bounds.right - bounds.left;
         int height = bounds.bottom - bounds.top;
@@ -146,7 +147,7 @@ public class RemoteApiImpl implements RemoteApi {
         image.setRGB(0, 0, width, height, buffer.getIntArray(0, width * height), 0, width);
 
         GDI32.INSTANCE.DeleteObject(hBitmap);
-        User32.INSTANCE.ReleaseDC(hWnd, hdcWindow);
+        User32.INSTANCE.ReleaseDC(hwnd, hdcWindow);
 
         return image;
 
