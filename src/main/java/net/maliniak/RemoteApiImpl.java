@@ -73,7 +73,7 @@ public class RemoteApiImpl implements RemoteApi {
 
         try {
             // retrieve image
-            File outputfile = new File(hwnd.getPointer().getLong(0) + ".png");
+            File outputfile = new File(hwnd.getPointer().getInt(0) + ".png");
             ImageIO.write(capture, "png", outputfile);
         } catch (IOException e) {
             logger.warn("chujnia", e);
