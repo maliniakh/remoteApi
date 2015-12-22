@@ -184,7 +184,7 @@ public class RemoteApiImpl implements RemoteApi {
         User32.INSTANCE.GetWindowThreadProcessId(hwnd, intByRef);
         int processId = intByRef.getValue();
 
-        return new Window(hwnd.getPointer().getLong(0), rect.left, rect.top, width, height, title, processId);
+        return new Window(hwnd.getPointer().getInt(0), rect.left, rect.top, width, height, title, processId);
     }
 
     /**
