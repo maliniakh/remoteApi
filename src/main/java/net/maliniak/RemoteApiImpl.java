@@ -16,7 +16,6 @@ import net.sf.lipermi.exception.LipeRMIException;
 import net.sf.lipermi.handler.CallHandler;
 import net.sf.lipermi.net.Server;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -28,10 +27,12 @@ import com.sun.jna.platform.win32.GDI32;
 import com.sun.jna.platform.win32.WinGDI.BITMAPINFO;
 import com.sun.jna.platform.win32.WinGDI;
 import com.sun.jna.Memory;
-
-import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RemoteApiImpl implements RemoteApi {
+    private static final Logger logger = LoggerFactory.getLogger(RemoteApiImpl.class);
+
     final static User32 instance = User32.INSTANCE;
 
     @Override
@@ -124,6 +125,8 @@ public class RemoteApiImpl implements RemoteApi {
 
         int width = bounds.right - bounds.left;
         int height = bounds.bottom - bounds.top;
+
+        logger.info("capture: width={}, height={}", width, height);
 
         User32.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, width, height);
 
