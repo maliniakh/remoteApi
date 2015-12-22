@@ -6,6 +6,7 @@ import net.maliniak.model.Window;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import com.sun.jna.platform.win32.WinDef;
 
 /**
  * Created by llmali on 01/12/2015.
@@ -17,7 +18,7 @@ public interface RemoteApi {
 
     List<Window> getWindows(Integer processId, String titleRegex);
 
-    BufferedImage capture(Long hwndPeer);
+    BufferedImage capture(WinDef.HWND hwndPeer);
 
     void mouseMove(int x, int y);
 

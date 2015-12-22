@@ -17,6 +17,7 @@ import net.sf.lipermi.handler.CallHandler;
 import net.sf.lipermi.net.Server;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import com.sun.jna.platform.win32.WinGDI;
 import com.sun.jna.Memory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
 
 public class RemoteApiImpl implements RemoteApi {
     private static final Logger logger = LoggerFactory.getLogger(RemoteApiImpl.class);
@@ -63,10 +66,18 @@ public class RemoteApiImpl implements RemoteApi {
 
 
 
-//            long start = System.currentTimeMillis();
-//            BufferedImage capture = capture(hwnd);
-//            System.out.println(System.currentTimeMillis() - start);
-//        System.out.println("capture: " + capture);
+            long start = System.currentTimeMillis();
+            BufferedImage capture = capture(hwnd);
+            System.out.println(System.currentTimeMillis() - start);
+        System.out.println("capture: " + capture);
+
+        try {
+            // retrieve image
+            File outputfile = new File(hwnd.getPointer().getLong(0) + ".png");
+            ImageIO.write(capture, "png", outputfile);
+        } catch (IOException e) {
+            logger.warn("chujnia", e);
+        }
 
 //        JFrame frame = new JFrame();
 //        frame.getContentPane().setLayout(new FlowLayout());
@@ -110,13 +121,11 @@ public class RemoteApiImpl implements RemoteApi {
 
     /**
      * Seems like first call is slow (~200ms), but subsequent ones are way faster
-     * @param hwndPeer
+     * @param hwnd
      * @return
      */
     @Override
-    public BufferedImage capture(Long hwndPeer) {
-        WinDef.HWND hwnd = new WinDef.HWND(new Pointer(hwndPeer));
-
+    public BufferedImage capture(WinDef.HWND hwnd) {
         User32.HDC hdcWindow = User32.INSTANCE.GetDC(hwnd);
         User32.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
 
