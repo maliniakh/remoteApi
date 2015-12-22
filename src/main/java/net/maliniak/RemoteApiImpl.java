@@ -17,8 +17,9 @@ import net.sf.lipermi.handler.CallHandler;
 import net.sf.lipermi.net.Server;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,28 +64,6 @@ public class RemoteApiImpl implements RemoteApi {
         }, null);
 
         WinDef.HWND hwnd = Iterables.getOnlyElement(candidateWindows);
-
-
-
-            long start = System.currentTimeMillis();
-            BufferedImage capture = capture(hwnd);
-            System.out.println(System.currentTimeMillis() - start);
-        System.out.println("capture: " + capture);
-
-        try {
-            // retrieve image
-            File outputfile = new File(hwnd.getPointer().getInt(0) + ".png");
-            ImageIO.write(capture, "png", outputfile);
-        } catch (IOException e) {
-            logger.warn("chujnia", e);
-        }
-
-//        JFrame frame = new JFrame();
-//        frame.getContentPane().setLayout(new FlowLayout());
-//        frame.getContentPane().add(new JLabel(new ImageIcon(capture)));
-//        frame.pack();
-//        frame.setVisible(true);
-
         return createWindow(hwnd);
     }
 
@@ -121,11 +100,13 @@ public class RemoteApiImpl implements RemoteApi {
 
     /**
      * Seems like first call is slow (~200ms), but subsequent ones are way faster
-     * @param hwnd
+     * @param hwndPeer
      * @return
      */
     @Override
-    public BufferedImage capture(WinDef.HWND hwnd) {
+    public byte[] captureImage(Long hwndPeer) {
+        WinDef.HWND hwnd = new WinDef.HWND(new Pointer(hwndPeer));
+
         User32.HDC hdcWindow = User32.INSTANCE.GetDC(hwnd);
         User32.HDC hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow);
 
@@ -135,7 +116,7 @@ public class RemoteApiImpl implements RemoteApi {
         int width = bounds.right - bounds.left;
         int height = bounds.bottom - bounds.top;
 
-        logger.info("capture: width={}, height={}", width, height);
+        logger.info("captureImage: width={}, height={}", width, height);
 
         User32.HBITMAP hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, width, height);
 
@@ -161,8 +142,18 @@ public class RemoteApiImpl implements RemoteApi {
         GDI32.INSTANCE.DeleteObject(hBitmap);
         User32.INSTANCE.ReleaseDC(hwnd, hdcWindow);
 
-        return image;
+        // convert it to byte[]
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", baos);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
 
+//        alternative
+//        byte[] imageBytes = ((DataBufferByte) bufferedImage.getData().getDataBuffer()).getData();
+
+        return baos.toByteArray();
     }
 
     @Override
@@ -184,7 +175,7 @@ public class RemoteApiImpl implements RemoteApi {
         User32.INSTANCE.GetWindowThreadProcessId(hwnd, intByRef);
         int processId = intByRef.getValue();
 
-        return new Window(hwnd.getPointer().getInt(0), rect.left, rect.top, width, height, title, processId);
+        return new Window(toLong(hwnd.getPointer()), rect.left, rect.top, width, height, title, processId);
     }
 
     /**
@@ -210,6 +201,20 @@ public class RemoteApiImpl implements RemoteApi {
         System.out.println("server started");
     }
 
+    /**
+     * there might be no other way than using reflection
+     * @param p
+     * @return underlying peer (pointer value)
+     */
+    private static Long toLong(Pointer p) {
+        try {
+            Field peerField = p.getClass().getDeclaredField("peer");
+            peerField.setAccessible(true);
+            return (Long) peerField.get(p);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     public static void main(String[] args) throws IOException, LipeRMIException {
         RemoteApiImpl remoteApi = new RemoteApiImpl();
@@ -218,7 +223,7 @@ public class RemoteApiImpl implements RemoteApi {
 //        Window lobby = remoteApi.getUniqueWindow("Lobby");
 //        System.out.println(lobby);
 //
-//
+//t
 //        List<Window> childWindows = remoteApi.getChildWindows(lobby.getHwnd(), null);
 //        System.out.println("child windows:");
 //        for (Window w : childWindows) {
