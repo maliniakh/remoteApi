@@ -1,12 +1,9 @@
 package net.maliniak;
 
-import com.sun.jna.platform.win32.User32;
 import net.maliniak.model.Site;
 import net.maliniak.model.Window;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
-import com.sun.jna.platform.win32.WinDef;
 
 /**
  * Created by llmali on 01/12/2015.
@@ -21,6 +18,8 @@ public interface RemoteApi {
     byte[] captureImage(Long hwndPeer);
 
     void mouseMove(int x, int y);
+
+    void mouseClick();
 
 //    List<Window> getChildWindows(WinDef.HWND hwnd, String titleRegex) throws RemoteException;
 }

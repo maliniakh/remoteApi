@@ -16,6 +16,8 @@ import net.sf.lipermi.exception.LipeRMIException;
 import net.sf.lipermi.handler.CallHandler;
 import net.sf.lipermi.net.Server;
 
+import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,6 +40,16 @@ public class RemoteApiImpl implements RemoteApi {
     private static final Logger logger = LoggerFactory.getLogger(RemoteApiImpl.class);
 
     final static User32 instance = User32.INSTANCE;
+
+    private Robot robot;
+
+    public RemoteApiImpl() {
+        try {
+            this.robot = new Robot();
+        } catch (AWTException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     @Override
     public Window getUniqueWindow(Site site) {
@@ -159,7 +171,12 @@ public class RemoteApiImpl implements RemoteApi {
 
     @Override
     public void mouseMove(int x, int y) {
-        throw new UnsupportedOperationException();
+        robot.mouseMove(x, y);
+    }
+
+    @Override
+    public void mouseClick() {
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
     }
 
     private static Window createWindow(WinDef.HWND hwnd) {
