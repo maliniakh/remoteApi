@@ -145,6 +145,7 @@ public class RemoteApiImpl implements RemoteApi {
         // convert it to byte[]
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
+            // OPT: gif is faster than png, although introduces banding
             ImageIO.write(image, "png", baos);
         } catch (IOException e) {
             throw new IllegalStateException(e);
