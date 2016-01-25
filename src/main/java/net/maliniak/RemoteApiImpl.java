@@ -177,6 +177,12 @@ public class RemoteApiImpl implements RemoteApi {
     @Override
     public void mouseClick() {
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            throw new UnsupportedOperationException();
+        }
+        robot.mouseRelease(InputEvent.BUTTON1_MASK);
     }
 
     private static Window createWindow(WinDef.HWND hwnd) {
